@@ -1,4 +1,4 @@
-import Arm
+import ArmCuadrada
 
 class Human:
     '''Class for Human player'''
@@ -43,7 +43,7 @@ class AI:
 
     def move(self,gameinstance):
         move_position,score = self.maximized_move(gameinstance)
-        Arm.jugada(ARMMapper(move_position))
+        ArmCuadrada.jugada(ARMMapper(move_position))
         gameinstance.mark(self.marker,move_position)
 
     def maximized_move(self,gameinstance):
