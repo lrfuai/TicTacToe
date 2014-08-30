@@ -58,16 +58,24 @@ def PosicionIntermedia(s):
 
         
 ## FILA 1
-def H1(s):
+def H1(s,lugar):
         vecFicha = (90,197,110,127,74)
+        if lugar==2:
+            vecFicha = (90,178,92,93,74)
+        elif lugar == 3:
+            vecFicha = (90,170,63,52,74)
         PosicionarBrazo(s,vecFicha)
         Agarrar(s)
         vec = (90,165,118,149,74)
         PosicionarBrazo(s,vec)
         Soltar(s)
     
-def G1(s):
+def G1(s,lugar):
         vecFicha = (90,197,110,127,74)
+        if lugar==2:
+            vecFicha = (90,178,92,93,74)
+        elif lugar == 3:
+            vecFicha = (90,170,63,52,74)
         PosicionarBrazo(s,vecFicha)
         Agarrar(s)
         vec = (90,135,118,149,74)
@@ -75,8 +83,12 @@ def G1(s):
         Soltar(s)
 
      
-def F1(s):
+def F1(s,lugar):
         vecFicha = (90,197,110,127,74)
+        if lugar==2:
+            vecFicha = (90,178,92,93,74)
+        elif lugar == 3:
+            vecFicha = (90,170,63,52,74)
         PosicionarBrazo(s,vecFicha)
         Agarrar(s)
         vec = (90,100,113,140,74)
@@ -84,46 +96,70 @@ def F1(s):
         Soltar(s)
 
 ## FILA 2
-def H2(s):
+def H2(s,lugar):
         vecFicha = (90,178,92,93,74)
+        if lugar==1:
+            vecFicha = (90,197,110,127,74)
+        elif lugar == 3:
+            vecFicha = (90,170,63,52,74)
         PosicionarBrazo(s,vecFicha)
         Agarrar(s)
         vec = (90,158,99,117,74)
         PosicionarBrazo(s,vec)
         Soltar(s)
-def G2(s):
-        vecFicha = (90,178,86,93,74)
+def G2(s,lugar):
+        vecFicha = (90,178,92,93,74)
+        if lugar==1:
+            vecFicha = (90,197,110,127,74)
+        elif lugar == 3:
+            vecFicha = (90,170,63,52,74)
         PosicionarBrazo(s,vecFicha)
         Agarrar(s)
         vec = (90,135,99,117,74)
         PosicionarBrazo(s,vec)
         Soltar(s)
-def F2(s):
-        vecFicha = (90,178,86,93,74)
+def F2(s,lugar):
+        vecFicha = (90,178,92,93,74)
+        if lugar==1:
+            vecFicha = (90,197,110,127,74)
+        elif lugar == 3:
+            vecFicha = (90,170,63,52,74)
         PosicionarBrazo(s,vecFicha)
         Agarrar(s)
         vec = (90,109,94,108,74)
         PosicionarBrazo(s,vec)
         Soltar(s)
 ## FILA 3        
-def H3(s):
+def H3(s,lugar):
         vecFicha = (90,170,63,52,74)
+        if lugar==2:
+            vecFicha = (90,178,92,93,74)
+        elif lugar == 1:
+            vecFicha = (90,197,110,127,74)
         PosicionarBrazo(s,vecFicha)
         Agarrar(s)
         vec = (90,150,74,75,74)
         PosicionarBrazo(s,vec)
         Soltar(s)
 
-def G3(s):
+def G3(s,lugar):
         vecFicha = (90,170,63,52,74)
+        if lugar==2:
+            vecFicha = (90,178,92,93,74)
+        elif lugar == 1:
+            vecFicha = (90,197,110,127,74)
         PosicionarBrazo(s,vecFicha)
         Agarrar(s)
         vec = (90,135,74,75,74)
         PosicionarBrazo(s,vec)
         Soltar(s)
 
-def F3(s):
+def F3(s,lugar):
         vecFicha = (90,170,63,52,74)
+        if lugar==2:
+            vecFicha = (90,178,92,93,74)
+        elif lugar == 1:
+            vecFicha = (90,197,110,127,74)
         PosicionarBrazo(s,vecFicha)
         Agarrar(s)
         vec = (90,114,69,66,74)
@@ -161,7 +197,7 @@ def PosicionarBrazo(s,vec):
         PosicionarMotor(s,4,P4,vec[4])
         PosicionarMotor(s,2,P2,vec[2])
         
-def jugada(posicion):
+def jugada(posicion,lugar):
     #inicializar variables
     iCiclos = 0  
     sData = ['0','0','0']
@@ -177,23 +213,23 @@ def jugada(posicion):
     if posicion == '0':
           PosicionCero(s)
     elif posicion == 'H1':
-             H1(s)
+             H1(s,lugar)
     elif posicion == 'H2':
-             H2(s)
+             H2(s,lugar)
     elif posicion == 'H3':
-             H3(s)    
+             H3(s,lugar)    
     elif posicion == 'G1':
-             G1(s)
+             G1(s,lugar)
     elif posicion == 'G2':
-             G2(s)
+             G2(s,lugar)
     elif posicion == 'G3':
-             G3(s)
+             G3(s,lugar)
     elif posicion == 'F1':
-             F1(s)
+             F1(s,lugar)
     elif posicion == 'F2':
-             F2(s)
+             F2(s,lugar)
     elif posicion == 'F3':
-         F3(s)                 
+         F3(s,lugar)                 
     sleep(2)
     PosicionIntermedia(s)
     s.close()
