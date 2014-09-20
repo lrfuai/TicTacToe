@@ -131,7 +131,7 @@ def F3(s):
         Soltar(s)
 
 def Abrir(s):
-        PosicionarMotor(s,0,P0,167)
+        PosicionarMotor(s,0,P0,187)
 
 def Cerrar(s):
         PosicionarMotor(s,0,P0,110)
@@ -169,7 +169,7 @@ def jugada(posicion):
 
 
    
-    iport = 0
+    iport = 2
     s = serial.Serial(int(iport),9600)
     serial.timeout=1
 

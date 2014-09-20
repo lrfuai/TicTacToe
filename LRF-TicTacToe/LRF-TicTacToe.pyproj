@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>682eccd5-db7e-4984-bfc7-add959d13d9f</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>LRF_TicTacToe.py</StartupFile>
+    <StartupFile>LRF_TicTacToeParametrizado.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -30,10 +30,18 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Arm.py" />
+    <Compile Include="ArmCuadrada.py" />
+    <Compile Include="ArmParametrizada.py" />
+    <Compile Include="ArmParametrizado.py" />
     <Compile Include="Board.py" />
     <Compile Include="Game.py" />
     <Compile Include="LRF_TicTacToe.py" />
+    <Compile Include="LRF_TicTacToeFichaCuadrada.py" />
+    <Compile Include="LRF_TicTacToeParametrizado.py" />
     <Compile Include="Player.py" />
+    <Compile Include="PlayerCuadrada.py" />
+    <Compile Include="PlayerParametrizado.py" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="{2af0f10d-7135-4994-9156-5d01c9c11b7e}\2.7" />

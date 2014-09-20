@@ -205,7 +205,7 @@ def jugada(posicion,lugar):
 
 
    
-    iport = 0
+    iport = 2
     s = serial.Serial(int(iport),9600)
     serial.timeout=1
 

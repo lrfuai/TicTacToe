@@ -1,4 +1,4 @@
-import ArmParametrizada
+import ArmParametrizado
 
 class Human:
     '''Class for Human player'''
@@ -43,7 +43,7 @@ class AI:
 
     def move(self,gameinstance):
         move_position,score = self.maximized_move(gameinstance)
-        ArmParametrizada.jugada(ARMMapper(move_position),3)
+        ArmParametrizado.jugada(str(move_position))
         gameinstance.mark(self.marker,move_position)
 
     def maximized_move(self,gameinstance):
