@@ -6,18 +6,18 @@ class Human:
     def __init__(self,marker):
         self.marker = marker
         self.type = 'H'
-    
+
     def move(self, gameinstance):
 
         while True:
-        
+
             m = raw_input("Input position:")
 
             try:
                 m = int(m)
             except:
                 m = -1
-        
+
             if m not in gameinstance.freePositions():
                 print ("Invalid move. Retry")
             else:
@@ -28,13 +28,16 @@ class Human:
 def ARMMapper(position):
         options = {0:"H1",1:"G1",2:"F1",3:"H2",4:"G2",5:"F2",6:"H3",7:"G3",8:"F3"}
         return options[position]
-         
+
 class AI:
     '''Class for Computer Player'''
+    EASY = "EASY"
+    HARD = "HARD"
 
-    def __init__(self, marker):
+    def __init__(self, marker, level):
         self.marker = marker
         self.type = 'C'
+        self.level = level
 
         if self.marker == 'X':
             self.opponentmarker = 'O'
@@ -42,25 +45,30 @@ class AI:
             self.opponentmarker = 'X'
 
     def move(self,gameinstance):
-        move_position,score = self.maximized_move(gameinstance)
+        if(self.level == self.HARD):
+            move_position,score = self.maximized_move(gameinstance)
+        elif(self.level == self.EASY):
+            move_position,score = self.minimized_move(gameinstance)
+        else:
+            move_position,score = self.maximized_move(gameinstance)
         ArmParametrizado.jugada(str(move_position))
         gameinstance.mark(self.marker,move_position)
 
     def maximized_move(self,gameinstance):
-        ''' Find maximized move'''    
+        ''' Find maximized move'''
         bestscore = None
         bestmove = None
 
         for m in gameinstance.freePositions():
             gameinstance.mark(self.marker,m)
-        
+
             if gameinstance.is_gameover():
                 score = self.get_score(gameinstance)
             else:
                 move_position,score = self.minimized_move(gameinstance)
-        
+
             gameinstance.revert_last_move()
-            
+
             if bestscore == None or score > bestscore:
                 bestscore = score
                 bestmove = m
@@ -75,14 +83,14 @@ class AI:
 
         for m in gameinstance.freePositions():
             gameinstance.mark(self.opponentmarker,m)
-        
+
             if gameinstance.is_gameover():
                 score = self.get_score(gameinstance)
             else:
                 move_position,score = self.maximized_move(gameinstance)
-        
+
             gameinstance.revert_last_move()
-            
+
             if bestscore == None or score < bestscore:
                 bestscore = score
                 bestmove = m
