@@ -1,6 +1,7 @@
 import pygame;
 import csv;
 import logging;
+import mmap;
 from pygame.locals import *
 
 BoardEmptySelector = "-"
@@ -61,7 +62,7 @@ class VisualBoard :
     
     file = ""
     lastRaw = ["-","-","-","-","-","-","-","-"]
-    lastMessage = ""
+    lastMessage = " "
     
     def __init__(self,settings):
         logging.info("Creating Visual Board")
@@ -77,10 +78,16 @@ class VisualBoard :
         
 
     def __generateFile(self):
-        with open(self.file, "w+") as f:
-            writer = csv.writer(f)
-            writer.writerow(self.lastRaw)
+       # with open(self.file, "w+") as f:
+       #     writer = csv.writer(f)
+       #     writer.writerow(self.lastRaw)
             #f.write(self.lastMessage.lstrip())
+
+       with open(self.file,"r+") as f:
+            map =mmap.mmap(f.fileno(),0)
+            miString = ','.join(self.lastRaw)
+            miString = miString + ',' + str(self.lastMessage) + ','
+            map.write(miString)
 
 class AsciiBoard :
 

@@ -55,22 +55,22 @@ class Game:
             
             if i%2==0:
                 if self.p1.type == 'H':
-                    self.Board.Log("\t\t[Human's Move]")
+                    self.Board.Log("[Human's Move]")
                 else:
-                    self.Board.Log("\t\t[Computer's Move]")
+                    self.Board.Log("[Computer's Move]")
 
                 self.p1.move(self)
             else:
                 if self.p2.type == 'H':
-                    self.Board.Log("\t\t[Human's Move]")
+                    self.Board.Log("[Human's Move]")
                 else:
-                    self.Board.Log("\t\t[Computer's Move]")
+                    self.Board.Log("[Computer's Move]")
 
                 self.p2.move(self)
 
             if self.is_gameover():
                 if self.winner == '-':
-                    self.Board.Log("\nGame over with Draw")
+                    self.Board.Log("Game over with Draw")
                 else:
-                    self.Board.Log("\nWinner : %s" %self.winner)
+                    self.Board.Log("Winner : %s" %self.winner)
                 return

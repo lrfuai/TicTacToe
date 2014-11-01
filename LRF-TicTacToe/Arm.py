@@ -29,9 +29,9 @@ Positions = {
       "6" : [[90,105,60,30,54],Position_Order],
       "7" : [[90,90,60,35,54],Position_Order],
       "8" : [[90,70,60,40,60],Position_Order],
-      "inicial" : [[90,90,100,50,78],Position_Order_Inverse],
+      "inicial" : [[90,140,100,50,78],Position_Order_Inverse],
       #Repositorios#
-      "9" : [[90,140,100,100,78],Position_Order_Inverse],
+      "9" : [[90,148,130,162,110],Position_Order_Inverse],
       "10" : [[90,128,100,117,110],Position_Order_Inverse],
       "11" : [[90,119,68,52,78],Position_Order_Inverse],
       "12" : [[90,54,68,52,78],Position_Order_Inverse],
@@ -125,7 +125,7 @@ def jugada(posicion):
     sData = ['0','0','0']
 
     #COM1 = 0#
-    iport = 2
+    iport = 4
     s = serial.Serial(int(iport),9600)
     serial.timeout=1
     if(Position_Last == None):

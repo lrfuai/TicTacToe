@@ -1,5 +1,6 @@
 import Arm
 import logging
+#import random
 from BoardRecognizer import OpticalBoard
 
 class Human:
@@ -14,8 +15,9 @@ class Human:
 
     def __GetMovement(self,gameinstance):
         for pos in gameinstance.freePositions():
-            if ( not self.BoardRecognizer.Cells[pos].isEmpty()):
-                return pos
+            for cell in self.BoardRecognizer.Cells:
+                if ( cell.Key == str(pos) and not cell.isEmpty()):
+                    return pos
     
     def move(self, gameinstance):
 
@@ -40,9 +42,15 @@ class Human:
          
 class AI:
     '''Class for Computer Player'''
+    EASY = "Easy"
+    HARD = "Hard"
+    RANDOM = "Random"
+    level = None
 
-    def __init__(self, marker):
-        logging.info("Initializing an AI Player")
+    def __init__(self, marker, level):
+        self.level = level
+        logging.info("Initializing an AI Player Level " + self.level)
+
         self.marker = marker
         self.type = 'C'
 
@@ -53,7 +61,18 @@ class AI:
 
     def move(self,gameinstance):
         logging.info("Calculating AI Movement")
-        move_position,score = self.maximized_move(gameinstance)
+
+        if (self.level == AI.HARD):
+            move_position,score = self.maximized_move(gameinstance)
+        elif (self.level == AI.EASY):
+            move_position,score = self.minimized_move(gameinstance)
+        else:
+            #if(random.randint(0,100) % 2 == 0):
+            #    move_position,score = self.maximized_move(gameinstance)
+            #else :
+            #    move_position,score = self.minimized_move(gameinstance)
+            move_position,score = self.minimized_move(gameinstance)
+
         #Arm.jugada(ARMMapper(move_position))
         Arm.jugada(str(move_position))
         logging.info("AI player ('" + self.marker + "') moves to '" + str(move_position) + "' position.")

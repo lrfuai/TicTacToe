@@ -56,8 +56,8 @@ class BoardRecognizer:
     def __SaveContournsImages(self, contours, img, name):
         number = 0
         for imgCnt in self.__ExtractContournsOnImage(contours,img):
-            number = number +1
             cv2.imwrite("Imgs/"+str(name)+"-"+str(number)+".jpg",imgCnt)
+            number = number +1
 
 
     def GetCells(self,img):

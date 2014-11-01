@@ -22,5 +22,5 @@ if __name__ == '__main__':
 
     game = Game(settings)
     player1 = Human(settings.get("Main","PlayerOne"),settings)
-    player2 = AI(settings.get("Main","PlayerTwo"))
+    player2 = AI(settings.get("Main","PlayerTwo"), AI.RANDOM)
     game.play( player1, player2)
