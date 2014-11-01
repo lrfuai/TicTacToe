@@ -80,7 +80,7 @@ class VisualBoard :
         with open(self.file, "w+") as f:
             writer = csv.writer(f)
             writer.writerow(self.lastRaw)
-            f.write(self.lastMessage.lstrip())
+            #f.write(self.lastMessage.lstrip())
 
 class AsciiBoard :
 

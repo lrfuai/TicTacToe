@@ -51,6 +51,7 @@
     <Content Include="Tablero\lista.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Imgs\" />
     <Folder Include="Tablero\" />
     <Folder Include="Tablero\Imagenes\" />
   </ItemGroup>

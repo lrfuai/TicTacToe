@@ -31,16 +31,12 @@ class Human:
                 m = -1
         
             if m not in gameinstance.freePositions():
-                print ("Invalid move. Retry")
+                print ("No Move, Trying..")
             else:
                 break
         #Arm.jugada(ARMMapper(m))
-        logging.info("Human player ('" + self.marker + "') moves to '" + m + "' position.")
+        logging.info("Human player ('" + self.marker + "') moves to '" + str(m) + "' position.")
         gameinstance.mark(self.marker,m)
-
-def ARMMapper(position):
-        options = {0:"H1",1:"G1",2:"F1",3:"H2",4:"G2",5:"F2",6:"H3",7:"G3",8:"F3"}
-        return options[position]
          
 class AI:
     '''Class for Computer Player'''
@@ -56,14 +52,15 @@ class AI:
             self.opponentmarker = 'X'
 
     def move(self,gameinstance):
+        logging.info("Calculating AI Movement")
         move_position,score = self.maximized_move(gameinstance)
-        Arm.jugada(ARMMapper(move_position))
-        logging.info("AI player ('" + self.marker + "') moves to '" + move_position + "' position.")
+        #Arm.jugada(ARMMapper(move_position))
+        Arm.jugada(str(move_position))
+        logging.info("AI player ('" + self.marker + "') moves to '" + str(move_position) + "' position.")
         gameinstance.mark(self.marker,move_position)
 
     def maximized_move(self,gameinstance):
         ''' Find maximized move'''    
-        logging.info("AI searching maximized Player")
         bestscore = None
         bestmove = None
 
@@ -85,7 +82,6 @@ class AI:
 
     def minimized_move(self,gameinstance):
         ''' Find the minimized move'''
-        logging.info("AI searching minimized Player")
         bestscore = None
         bestmove = None
 

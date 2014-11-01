@@ -7,7 +7,7 @@
 # Junio de 2014 - Bs As LRF UAI
 
 
-import os    
+import os
 import sys
 import serial
 import pygame
@@ -15,25 +15,38 @@ import pygame
 from math import *
 from time import time, sleep
 
+Position_Order = (0,3,1,2,4)
+Position_Order_Inverse = (4,2,1,3,0)
+numeroRepositorio = 9
+
 Positions = {
-      "0" : (90,120,118,130,74),
-      "1" : (90,95,118,139,74),
-      "2" : (90,70,113,130,74),
-      "3" : (90,118,99,107,74),
-      "4" : (90,95,99,107,74),
-      "5" : (90,69,94,98,74),
-      "6" : (90,110,74,65,74),
-      "7" : (90,87,74,65,74),
-      "8" : (90,74,69,56,74),
-      "inicial" : (90,89,130,140,80),
-      "Repositorio" : (95,140,100,100,70),
-      "Intermedia" : (95,140,100,43,70),
+      "0" : [[90,120,120,130,74],Position_Order_Inverse],
+      "1" : [[90,95,120,125,64],Position_Order_Inverse],
+      "2" : [[90,60,120,130,74],(0,2,1,3,4)],
+      "3" : [[90,110,89,85,64],(0,2,4,3,1)],
+      "4" : [[90,90,89,85,64],(0,3,4,1,2)],
+      "5" : [[90,70,89,85,64],(0,2,1,3,4)],
+      "6" : [[90,105,60,30,54],Position_Order],
+      "7" : [[90,90,60,35,54],Position_Order],
+      "8" : [[90,70,60,40,60],Position_Order],
+      "inicial" : [[90,90,100,50,78],Position_Order_Inverse],
+      #Repositorios#
+      "9" : [[90,140,100,100,78],Position_Order_Inverse],
+      "10" : [[90,128,100,117,110],Position_Order_Inverse],
+      "11" : [[90,119,68,52,78],Position_Order_Inverse],
+      "12" : [[90,54,68,52,78],Position_Order_Inverse],
+      "13" : [[90,54,88,87,78],Position_Order_Inverse],
+      "14" : [[90,41,103,102,78],Position_Order_Inverse],
+      "15" : [[90,140,100,100,78],Position_Order_Inverse],
+      "16" : [[90,140,100,100,78],Position_Order_Inverse],
+      "17" : [[90,140,100,100,78],Position_Order_Inverse],
+      #Fin repositorios#
+      "Intermedia" : [[90,90,70,60,78],Position_Order],
 }
 
-Position_Order = (0,3,1,4,2)
+
 
 Position_Initial = Positions["inicial"];
-Position_Repository = Positions["Repositorio"];
 Position_Transition = Positions["Intermedia"];
 
 Position_Last  = None;
@@ -41,39 +54,42 @@ IncementFactor = (1,1,1,1,1);
 
 """
 mueve una posicion una articulacion en particular
-"""                
+"""
 def moverArticulacion(s,motor,posicion):
       comando = [255,motor,posicion]
       s.write(comando)
       sleep(0.02)
 """
 Transicion Brusca a una nueva posicion
-""" 
+"""
 def transicionBrusca(s,posicion):
     global Position_Last
     for i in Position_Order:
         moverArticulacion(s,i,posicion[i])
-    Position_Last = posicion 
+    Position_Last = posicion
 
 
 
 """
 Transicion Suave a una nueva posicion con un orden especifico
 """
-def transicionSuave(s,origin,posicion,orden = Position_Order):
+def transicionSuave(s,origin,posicion, orden = None):
     global Position_Last
-    if(Position_Last !=  origin):
-        transicionBrusca(s,origin)
-    
-    Position_Last = origin
-    last = origin;
+    #if(Position_Last !=  origin[0]):
+    #    transicionBrusca(s,origin[0])
+
+    Position_Last = origin[0]
+    last = origin[0];
     ready = False;
+    if(orden == None):
+        orden =posicion[1]
+
     for i in orden:
-        newPos = last[i];
-        while(posicion[i] != newPos):
-            if(posicion[i] > newPos):
+        newPos = last[i]
+        while(posicion[0][i] != newPos):
+            if(posicion[0][i] > newPos):
                 newPos = newPos +IncementFactor[i];
-            elif(posicion[i] < newPos):
+            elif(posicion[0][i] < newPos):
                 newPos = newPos-IncementFactor[i];
             moverArticulacion(s,i,newPos)
     Position_Last = posicion;
@@ -83,13 +99,20 @@ movida generica para cualquier jugada
 """
 def movida(s, posicion):
         global Position_Repository
+        global Position_Order
         global Position_Last
-        transicionSuave(s, Position_Last, Position_Repository)
+        global numeroRepositorio
+        transicionSuave(s, Position_Last, Positions[str(numeroRepositorio)])
         Agarrar(s)
-        transicionSuave(s, Position_Repository, Position_Transition)
-        transicionSuave(s, Position_Transition, Positions[posicion], reversed(Position_Order))
+        #transicionSuave(s, Position_Repository, Position_Transition)
+        #transicionSuave(s, Position_Transition, Positions[posicion])
+        transicionSuave(s, Positions[str(numeroRepositorio)], Positions[posicion])
+        numeroRepositorio = numeroRepositorio + 1
         Soltar(s)
-        transicionSuave(s, Positions[posicion], Position_Initial, reversed(Position_Order))
+        orden = None
+        if(posicion in ("0","1","2")):
+            orden = Position_Order
+        transicionSuave(s, Positions[posicion], Position_Initial,orden)
 
 """
 Realiza la jugada en el tablero
@@ -98,15 +121,15 @@ def jugada(posicion):
     global Position_Last
     #Funcion que llama playerParametrizado.py#
     #inicializar variables
-    iCiclos = 0  
+    iCiclos = 0
     sData = ['0','0','0']
-    
-    #COM1 = 0#       
+
+    #COM1 = 0#
     iport = 2
     s = serial.Serial(int(iport),9600)
     serial.timeout=1
     if(Position_Last == None):
-        transicionBrusca(s,Position_Initial)
+        transicionBrusca(s,Position_Initial[0])
         Position_Last = Position_Initial
     else:
         transicionSuave(s, Position_Last, Position_Initial)
@@ -126,15 +149,19 @@ Cierra el Brazo
 def Cerrar(s):
       moverArticulacion(s,0,90)
       sleep(1)
-     
+
 
 def Bajar(s):
-     moverArticulacion(s,3,Position_Last[3]+18)
-     sleep(1)
+     for i in range(1,15):
+        moverArticulacion(s,3,Position_Last[0][3]+i)
+     Position_Last[0][3] = Position_Last[0][3]+15
+
 
 def Subir(s):
-     moverArticulacion(s,3,Position_Last[3]-18)
-     sleep(1)
+     for i in range(1,15):
+        moverArticulacion(s,3,Position_Last[0][3]-i)
+     Position_Last[0][3] = Position_Last[0][3]-15
+
 
 """
 Agarra el Brazo
@@ -147,14 +174,14 @@ def Agarrar(s):
 
 """
 Suelta el Brazo
-"""      
+"""
 def Soltar(s):
       Bajar(s);
       Abrir(s)
       Subir(s)
 
 def main():
-    #Ingreso por teclado#    
+    #Ingreso por teclado#
     while True:
           data = raw_input("Ingrese posicion ")
           print data
@@ -162,11 +189,18 @@ def main():
     s.close()
 
 def TEST():
-      iport = 2
+      iport = 0
       s = serial.Serial(int(iport),9600)
       serial.timeout=1
-      transicionBrusca(s,Position_Initial)
-
+      transicionBrusca(s,Positions["0"])
+      transicionSuave(s,Positions["0"], Positions["1"])
+      transicionSuave(s,Positions["1"],Positions["2"])
+      transicionSuave(s,Positions["2"],Positions["3"])
+      transicionSuave(s,Positions["3"],Positions["4"])
+      transicionSuave(s,Positions["4"],Positions["5"])
+      transicionSuave(s,Positions["5"],Positions["6"])
+      transicionSuave(s,Positions["6"],Positions["7"])
+      transicionSuave(s,Positions["7"],Positions["8"])
 
 if __name__ == '__main__':
       main()
