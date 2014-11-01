@@ -1,6 +1,7 @@
 import pygame;
+import csv;
+import logging;
 from pygame.locals import *
-
 
 BoardEmptySelector = "-"
 
@@ -8,12 +9,15 @@ class GameBoard:
 
     raw = []
     Board = None
+    settings = None
 
-    def __init__(self):
+    def __init__(self,settings):
+        logging.info("Initializing Game Board")
+        self.settings = settings
         self.raw = [ BoardEmptySelector for i in range(0,9) ]
         self.Board = BoardComposite()
         self.Board.Add(AsciiBoard())
-        self.Board.Add(PygameBoard())
+        self.Board.Add(VisualBoard(settings))
 
     def print_board(self):
         '''Print the current game board'''
@@ -31,11 +35,16 @@ class GameBoard:
         self.Board.Log(message)
 
     def Draw(self):
+        logging.info("Refreshing Boards")
         self.Board.Draw(self.raw);
 
 class BoardComposite:
 
     Boards = []
+
+
+    def __init__(self):
+        logging.info("Creating Board Composite")
 
     def Add(self, board) :
         self.Boards.append(board)
@@ -48,22 +57,35 @@ class BoardComposite:
         for board in self.Boards:
             board.Draw(raw)
 
-
-class PygameBoard :
+class VisualBoard :
     
-    def __init__(self):
-        pygame.init()
-        screen = pygame.display.set_mode((150,150))
-        pygame.display.set_caption("Tris")
-        font = pygame.font.SysFont("arial",30)
+    file = ""
+    lastRaw = ["-","-","-","-","-","-","-","-"]
+    lastMessage = ""
+    
+    def __init__(self,settings):
+        logging.info("Creating Visual Board")
+        self.file = settings.get("VisualBoard", "file")
 
     def Log(self, message):
-        pass
+        self.lastMessage = message
+        self.__generateFile()
 
     def Draw(self,raw):
-        pass
+        self.lastRaw = raw
+        self.__generateFile()
+        
+
+    def __generateFile(self):
+        with open(self.file, "w+") as f:
+            writer = csv.writer(f)
+            writer.writerow(self.lastRaw)
+            f.write(self.lastMessage.lstrip())
 
 class AsciiBoard :
+
+    def __init__(self):
+        logging.info("Creating ASCII Board")
 
     def Log(self, message):
         print(message)

@@ -1,17 +1,29 @@
 import Arm
+import logging
+from BoardRecognizer import OpticalBoard
 
 class Human:
     '''Class for Human player'''
+    BoardRecognizer = None
 
-    def __init__(self,marker):
+    def __init__(self,marker, settings):
+        logging.info("Initializing a Human Player")
+        self.BoardRecognizer = OpticalBoard(settings)
         self.marker = marker
         self.type = 'H'
+
+    def __GetMovement(self,gameinstance):
+        for pos in gameinstance.freePositions():
+            if ( not self.BoardRecognizer.Cells[pos].isEmpty()):
+                return pos
     
     def move(self, gameinstance):
 
         while True:
         
-            m = raw_input("Input position:")
+            self.BoardRecognizer.Recognize()
+
+            m = self.__GetMovement(gameinstance)
 
             try:
                 m = int(m)
@@ -23,6 +35,7 @@ class Human:
             else:
                 break
         #Arm.jugada(ARMMapper(m))
+        logging.info("Human player ('" + self.marker + "') moves to '" + m + "' position.")
         gameinstance.mark(self.marker,m)
 
 def ARMMapper(position):
@@ -33,6 +46,7 @@ class AI:
     '''Class for Computer Player'''
 
     def __init__(self, marker):
+        logging.info("Initializing an AI Player")
         self.marker = marker
         self.type = 'C'
 
@@ -44,10 +58,12 @@ class AI:
     def move(self,gameinstance):
         move_position,score = self.maximized_move(gameinstance)
         Arm.jugada(ARMMapper(move_position))
+        logging.info("AI player ('" + self.marker + "') moves to '" + move_position + "' position.")
         gameinstance.mark(self.marker,move_position)
 
     def maximized_move(self,gameinstance):
         ''' Find maximized move'''    
+        logging.info("AI searching maximized Player")
         bestscore = None
         bestmove = None
 
@@ -69,7 +85,7 @@ class AI:
 
     def minimized_move(self,gameinstance):
         ''' Find the minimized move'''
-
+        logging.info("AI searching minimized Player")
         bestscore = None
         bestmove = None
 

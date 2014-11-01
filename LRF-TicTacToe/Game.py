@@ -2,12 +2,13 @@ import Board
 from Board import GameBoard
 
 class Game:
+    settings = None
 
-    def __init__(self):
+    def __init__(self, settings):
         '''Initialize parameters - the game board, moves stack and winner'''
-
+        self.settings = settings
         #self.board = [ '-' for i in range(0,9) ]
-        self.Board = GameBoard()
+        self.Board = GameBoard(settings)
         self.lastmoves = []
         self.winner = None
 
@@ -18,7 +19,6 @@ class Game:
         '''Mark a position with marker X or O'''
 
         self.Board.raw[pos] = marker
-        #self.Board.Draw()
         self.lastmoves.append(pos)
 
     def revert_last_move(self):
@@ -69,7 +69,6 @@ class Game:
                 self.p2.move(self)
 
             if self.is_gameover():
-                self.Board.Draw()
                 if self.winner == '-':
                     self.Board.Log("\nGame over with Draw")
                 else:
