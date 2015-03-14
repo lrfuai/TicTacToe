@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 import random
 import time
 import logging
+from operator import itemgetter
 
 class BoardNotMatchingCellNumber (Exception):
     pass
@@ -64,16 +65,33 @@ class BoardRecognizer:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         ret,thresh = cv2.threshold(gray,127,255,cv2.THRESH_BINARY_INV)
         contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-        
+       
         cv2.imwrite("Imgs/Grayed.jpg",gray)
         cv2.imwrite("Imgs/Monochrome.jpg",thresh)
         cv2.drawContours(img, contours, -1, (0,255,0), 3)
         cv2.imwrite("Imgs/Contoruns.jpg",img)
 
         filteredBlocks = self.__GetCountournsBetween(contours, self.CellMinArea,self.CellMaxArea)
+
+        filteredBlocks = self.OrderContours(filteredBlocks)
+
         if(self.Debug):
             self.__SaveContournsImages(filteredBlocks, img, "GetCells")
         return filteredBlocks
+
+    def OrderContours(self, contours):
+        lista_tuples = []
+        for cnt in contours:
+           mom = cv2.moments(cnt)
+           (x,y,cnt) = int(mom['m10']/mom['m00']), int(mom['m01']/mom['m00']),cnt
+           lista_tuples.append((x,y,cnt))
+        lista_tuples = sorted(lista_tuples,key=itemgetter(0,1))
+        lista_cnt = []
+        for item in lista_tuples:
+            lista_cnt.append(item[2])
+        return lista_cnt
+
+
 
     def GetCellsImgs(self,img):
         return self.__ExtractContournsOnImage(self.GetCells(img), img)
