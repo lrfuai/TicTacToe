@@ -4,9 +4,10 @@ from matplotlib import pyplot as plt
 import random
 import time
 import logging
+import math
 from operator import itemgetter
 
-class BoardNotMatchingCellNumber (Exception):
+class BoardNotMatchingCellNumber(Exception):
     pass
 
 class BoardRecognizer:
@@ -36,8 +37,8 @@ class BoardRecognizer:
         ret = []
         for cnt in contours:
             area = cv2.contourArea(cnt)
-            if( area > areaFrom and area < areaTo):
-                approx = cv2.approxPolyDP(cnt,0.01*cv2.arcLength(cnt,True),True)
+            if(area > areaFrom and area < areaTo):
+                approx = cv2.approxPolyDP(cnt,0.01 * cv2.arcLength(cnt,True),True)
                 ret.append(approx)
         logging.info("Found " + str(len(ret)) + " Contourns between " + str(areaFrom) + " and " + str(areaTo))
         return ret
@@ -50,48 +51,97 @@ class BoardRecognizer:
             P = cv2.arcLength(hull,True)
 
             x,y,w,h = cv2.boundingRect(hull)
-            roi = img[y:y+h,x:x+w]
+            roi = img[y:y + h,x:x + w]
             list.append(roi)
         return list
 
     def __SaveContournsImages(self, contours, img, name):
         number = 0
         for imgCnt in self.__ExtractContournsOnImage(contours,img):
-            cv2.imwrite("Imgs/"+str(name)+"-"+str(number)+".jpg",imgCnt)
-            number = number +1
+            
+            # draw Centroid
+            mom = cv2.moments(contours[number])
+            (x,y) = int(mom['m10'] / mom['m00']), int(mom['m01'] / mom['m00'])
+            cv2.circle(imgCnt,(x,y),5,(0,0,255),-1)
+            
+            # Save to Disk
+            cv2.imwrite("Imgs/" + str(name) + "-" + str(number) + ".jpg",imgCnt)
+            number = number + 1
 
 
     def GetCells(self,img):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         ret,thresh = cv2.threshold(gray,127,255,cv2.THRESH_BINARY_INV)
         contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-       
-        cv2.imwrite("Imgs/Grayed.jpg",gray)
-        cv2.imwrite("Imgs/Monochrome.jpg",thresh)
-        cv2.drawContours(img, contours, -1, (0,255,0), 3)
-        cv2.imwrite("Imgs/Contoruns.jpg",img)
 
         filteredBlocks = self.__GetCountournsBetween(contours, self.CellMinArea,self.CellMaxArea)
 
         filteredBlocks = self.OrderContours(filteredBlocks)
 
         if(self.Debug):
+            cv2.imwrite("Imgs/Grayed.jpg",gray)
+            cv2.imwrite("Imgs/Monochrome.jpg",thresh)
+            cv2.drawContours(img, contours, -1, (0,255,0), 3)
+            cv2.imwrite("Imgs/Contoruns.jpg",img)
             self.__SaveContournsImages(filteredBlocks, img, "GetCells")
-        return filteredBlocks
 
+        return filteredBlocks
+    
     def OrderContours(self, contours):
         lista_tuples = []
+
+        # Calculamos los centroides de cada uno de los contornos
         for cnt in contours:
            mom = cv2.moments(cnt)
-           (x,y,cnt) = int(mom['m10']/mom['m00']), int(mom['m01']/mom['m00']),cnt
+           (x,y,cnt) = int(mom['m10'] / mom['m00']), int(mom['m01'] / mom['m00']),cnt
            lista_tuples.append((x,y,cnt))
-        lista_tuples = sorted(lista_tuples,key=itemgetter(0,1))
-        lista_cnt = []
+
+        # Creamos una matriz de coordenadas "similares"
+        matrix_tmp = []
         for item in lista_tuples:
-            lista_cnt.append(item[2])
-        return lista_cnt
+            if(len(matrix_tmp) == 0):
+                matrix_tmp.append([item])
+            else:
+                matched = False
+                for list in matrix_tmp:
+                    # Si Son "Similares" a este grupo, lo agregamos
+                    if (math.fabs(list[0][0] - item[0]) < math.sqrt(self.CellMinArea)):
+                        list.append(item)
+                        matched = True
+                # Si no encontramos un grupo similar, creamos un nuevo grupo
+                if( not matched):
+                    matrix_tmp.append([item])
+        
+        for list in matrix_tmp:
+            list = sorted(list,key=itemgetter(1))
+        
+        # Ordenamos cada grupo de "similares" por la otra coordenada
+        # Criterio de Similitud : Comparte Coordenada "W" => si coor1[W]-coor2[W] < Raiz(miArea)
+        matrix_ordenada = []
+        for list in matrix_tmp:
+            inserted = False;
+            if(len(matrix_ordenada) == 0):
+                matrix_ordenada.append(list)
+            else:
+                for i in range(0,len(matrix_ordenada) -1):
+                    if(matrix_tmp[i][0][0] < list[0][0]):
+                        matrix_ordenada.insert(i,list)
+                        inserted = True
+                if(not inserted):
+                    matrix_ordenada.append(list)
 
+        # Ponemos los elementos de matriz a lista
+        lista_cnt= []
+        for list in matrix_ordenada:
+            lista_cnt = lista_cnt + list
 
+        # Armamos un listado con los contornos ordenados
+        lista_tuples = []
+        for item in lista_cnt:
+            lista_tuples.append(item[2])
+
+        # Lo devolvemos ordenado de menor x
+        return lista_tuples
 
     def GetCellsImgs(self,img):
         return self.__ExtractContournsOnImage(self.GetCells(img), img)
@@ -118,7 +168,7 @@ class Cell:
         self.Key = key
 
     def isEmpty(self):
-        return len (self.Detector.GetContents(self.Img)) == 0
+        return len(self.Detector.GetContents(self.Img)) == 0
 
 
 class OpticalBoard:
@@ -129,18 +179,18 @@ class OpticalBoard:
     RecognizeErrorSleep = None
     BufferFramesToDiscard = None
 
-    def __init__ (self, settings):
+    def __init__(self, settings):
         logging.info("Initilizing Optical Board")
         self.Detector = BoardRecognizer(settings)
         self.Camera = cv2.VideoCapture(settings.getint("OpticalBoard","CameraId"))
         self.RecognizeErrorSleep = settings.getfloat("OpticalBoard","RecognizeErrorSleep")
-        self.BufferFramesToDiscard  = settings.getint("OpticalBoard","BufferFramesToDiscard")
+        self.BufferFramesToDiscard = settings.getint("OpticalBoard","BufferFramesToDiscard")
         
         for pos in settings.get("OpticalBoard","Positions").split(","):
             self.Cells.append(Cell(self.Detector, pos))
 
     def __Update(self, img):
-        cells = self.Detector.GetCellsImgs(img);
+        cells = self.Detector.GetCellsImgs(img)
         logging.info("Searching For " + str(len(self.Cells)) + " Cells...")
         logging.info(str(len(cells)) + " Cells Recognized...")
         if(len(cells) == len(self.Cells)) :
@@ -161,7 +211,7 @@ class OpticalBoard:
                 logging.info("Frame Stracted")
                 cv2.imwrite("Imgs/frame.jpg",frame)
                 self.__Update(frame)
-                cantDetect = False;
+                cantDetect = False
             except BoardNotMatchingCellNumber:
                 time.sleep(self.RecognizeErrorSleep)
                 
@@ -170,7 +220,7 @@ class OpticalBoard:
 if __name__ == '__main__':
     cap = cv2.VideoCapture(1)
 
-    aBoard = OpticalBoard( (0,1,2,3,4,5,8,7,6) )
+    aBoard = OpticalBoard((0,1,2,3,4,5,8,7,6))
 
     while (True):
         cantDetect = True
@@ -194,7 +244,7 @@ if __name__ == '__main__':
                 print chr(13)
             except BoardNotMatchingCellNumber:
                # time.sleep(.5)
-                cantDetect = False;
+                cantDetect = False
         
         print "---------------------------------------------------"
         cantDetect = True

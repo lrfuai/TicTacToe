@@ -125,7 +125,7 @@ def jugada(posicion):
     sData = ['0','0','0']
 
     #COM1 = 0#
-    iport = 4
+    iport = 3
     s = serial.Serial(int(iport),9600)
     serial.timeout=1
     if(Position_Last == None):
@@ -189,18 +189,18 @@ def main():
     s.close()
 
 def TEST():
-      iport = 0
+      iport = 3
       s = serial.Serial(int(iport),9600)
       serial.timeout=1
-      transicionBrusca(s,Positions["0"])
-      transicionSuave(s,Positions["0"], Positions["1"])
-      transicionSuave(s,Positions["1"],Positions["2"])
-      transicionSuave(s,Positions["2"],Positions["3"])
-      transicionSuave(s,Positions["3"],Positions["4"])
-      transicionSuave(s,Positions["4"],Positions["5"])
-      transicionSuave(s,Positions["5"],Positions["6"])
-      transicionSuave(s,Positions["6"],Positions["7"])
-      transicionSuave(s,Positions["7"],Positions["8"])
+      transicionBrusca(s,Position_Initial)
+      #transicionSuave(s,Positions["0"], Positions["1"])
+      #transicionSuave(s,Positions["1"],Positions["2"])
+      #transicionSuave(s,Positions["2"],Positions["3"])
+      #transicionSuave(s,Positions["3"],Positions["4"])
+      #transicionSuave(s,Positions["4"],Positions["5"])
+      #transicionSuave(s,Positions["5"],Positions["6"])
+      #transicionSuave(s,Positions["6"],Positions["7"])
+      #transicionSuave(s,Positions["7"],Positions["8"])
 
 if __name__ == '__main__':
       main()
