@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #Filename: tic-tac-toe.py
 #Description: Tic-Tac-Toe two player game
-import sys,random,time, ConfigParser, logging
+import sys,random,time, ConfigParser, logging, os
 
 from Game import Game
 from Player import Human
@@ -22,5 +22,7 @@ if __name__ == '__main__':
 
     game = Game(settings)
     player1 = Human(settings.get("Main","PlayerOne"),settings)
-    player2 = AI(settings.get("Main","PlayerTwo"), AI.HARD)
+    player2 = AI(settings.get("Main","PlayerTwo"), settings.get("Main","Dificulty"))
     game.play( player1, player2)
+
+    

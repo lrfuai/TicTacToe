@@ -125,7 +125,7 @@ def jugada(posicion):
     sData = ['0','0','0']
 
     #COM1 = 0#
-    iport = 3
+    iport = 7
     s = serial.Serial(int(iport),9600)
     serial.timeout=1
     if(Position_Last == None):

@@ -50,7 +50,6 @@
     <Content Include="Tablero\Imagenes\Cruz.jpg" />
     <Content Include="Tablero\Imagenes\CruzWin.jpg" />
     <Content Include="Tablero\Imagenes\Tateti tablero.jpg" />
-    <Content Include="Tablero\lista.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Imgs\" />

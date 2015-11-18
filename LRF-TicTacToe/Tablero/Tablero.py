@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 import time
-import sys, mmap
+import sys, mmap, os
 
 Pantalla=[700,539]
 P0=[143,40]
@@ -69,18 +69,18 @@ def main():
     screen = pygame.display.set_mode(Pantalla)
     pygame.display.set_caption("LRF UAI: Programa de Ta-Te-Ti")
  
-    background_image = load_image('Imagenes/Tateti tablero.jpg')
-    background_O = load_imageo('Imagenes/Circulo.jpg')
-    background_X = load_imagex('Imagenes/Cruz.jpg')
-    background_Ow = load_imageo('Imagenes/CirculoWin.jpg')
-    background_Xw = load_imagex('Imagenes/CruzWin.jpg')
+    background_image = load_image(os.path.dirname(__file__) + '/Imagenes/Tateti tablero.jpg')
+    background_O = load_imageo(os.path.dirname(__file__) + '/Imagenes/Circulo.jpg')
+    background_X = load_imagex(os.path.dirname(__file__) + '/Imagenes/Cruz.jpg')
+    background_Ow = load_imageo(os.path.dirname(__file__) + '/Imagenes/CirculoWin.jpg')
+    background_Xw = load_imagex(os.path.dirname(__file__) + '/Imagenes/CruzWin.jpg')
     while True:
         for eventos in pygame.event.get():
             if eventos.type == QUIT:
                 sys.exit(0)
 ##        f = open('lista.txt','r')
 ##        datos = f.readline()
-        with open("lista.txt", "r+") as f:
+        with open(os.path.dirname(__file__) + "/lista.txt", "r+") as f:
             map = mmap.mmap(f.fileno(), 0)
             datos = map.readline()
 ##            map.close()
